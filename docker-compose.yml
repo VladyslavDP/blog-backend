@@ -6,27 +6,11 @@ services:
     restart: always
     env_file:
       - .env.docker.development
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    command: redis-server --requirepass "${REDIS_PASSWORD}" --appendonly yes
     ports:
       - "${DEV_HOST}:6379:6379"
     volumes:
       - redis:/data
-
-  redis-ui:
-    image: redislabs/redisinsight:latest
-    restart: always
-    ports:
-      - "${DEV_HOST}:8001:8001"
-    environment:
-      - REDIS_HOST=redis
-      - REDIS_PORT=6379
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    depends_on:
-      - redis
-    networks:
-      - local
 
   postgres:
     image: postgres:alpine3.19
@@ -45,4 +29,3 @@ networks:
 volumes:
   postgres:
   redis:
-#  temporal-data:
