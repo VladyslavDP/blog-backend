@@ -1,0 +1,48 @@
+version: "3.9"
+services:
+
+  redis:
+    image: redis:7.2.0
+    restart: always
+    env_file:
+      - .env.docker.development
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    ports:
+      - "${DEV_HOST}:6379:6379"
+    volumes:
+      - redis:/data
+
+  redis-ui:
+    image: redislabs/redisinsight:latest
+    restart: always
+    ports:
+      - "${DEV_HOST}:8001:8001"
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    depends_on:
+      - redis
+    networks:
+      - local
+
+  postgres:
+    image: postgres:alpine3.19
+    restart: always
+    env_file:
+      - .env.docker.development
+    ports:
+      - '${DEV_HOST}:5432:5432'
+    volumes:
+      - postgres:/var/lib/postgresql/data
+networks:
+  local:
+    name: local
+    driver: bridge
+
+volumes:
+  postgres:
+  redis:
+#  temporal-data:
