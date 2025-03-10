@@ -3,7 +3,7 @@ import { Audit } from '@app/common/domain/entities/audit.entity';
 import { UUID } from '@app/common/types/common';
 
 @Entity('clients')
-export class ClientEntity extends BaseEntity {
+export class TagEntity extends BaseEntity {
   @PrimaryColumn({ type: 'uuid', nullable: false })
   id: UUID;
 

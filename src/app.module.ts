@@ -8,6 +8,7 @@ import {
   addTransactionalDataSource,
   getDataSourceByName,
 } from 'typeorm-transactional';
+import { TagModule } from './modules/tag/tag.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import {
         );
       },
     }),
+    TagModule,
   ],
   controllers: [AppController],
   providers: [AppService],
