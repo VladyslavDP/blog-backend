@@ -1,6 +1,7 @@
-import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
 import { Audit } from '@app/common/domain/entities/audit.entity';
 import { UUID } from '@app/common/types/common';
+import { PostEntity } from '@app/common/domain/entities/post.entity';
 
 @Entity('tags')
 export class TagEntity extends BaseEntity {
@@ -16,4 +17,7 @@ export class TagEntity extends BaseEntity {
 
   @Column(() => Audit, { prefix: false })
   audit: Audit;
+
+  @ManyToMany(() => PostEntity, (post) => post.tags)
+  posts: PostEntity[];
 }
