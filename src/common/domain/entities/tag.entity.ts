@@ -2,7 +2,7 @@ import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 import { Audit } from '@app/common/domain/entities/audit.entity';
 import { UUID } from '@app/common/types/common';
 
-@Entity('clients')
+@Entity('tags')
 export class TagEntity extends BaseEntity {
   @PrimaryColumn({ type: 'uuid', nullable: false })
   id: UUID;

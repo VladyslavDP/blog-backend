@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { AllExceptionsFilter } from '@app/common/filters/all-exceptions.filter';
+import { TagModule } from '@app/modules/tag/tag.module';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -31,11 +32,11 @@ async function bootstrap() {
 
   const swaggerDocs = [
     {
-      title: 'Agglopay Core API',
-      description: 'Agglopay Core API description',
+      title: 'Blog Core API',
+      description: 'Blog Core API description',
       version: 'v1',
       endpoint: 'swagger',
-      include: [], // AuthModule],
+      include: [TagModule],
     },
   ];
 

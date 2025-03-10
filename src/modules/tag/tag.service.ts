@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { TagEntity } from '@app/common/domain/entities/tag.entity';
 import { tagEntityToDto } from '@app/modules/tag/mapper/tag.mapper';
 import { TagDto } from './dto/tag.dto';
-import { UUID } from '@app/common/types/common';
+import { Page, PageableParams, UUID } from '@app/common/types/common';
 
 @Injectable()
 export class TagService {
@@ -13,9 +13,27 @@ export class TagService {
     private readonly tagRepository: Repository<TagEntity>,
   ) {}
 
-  async getTags(): Promise<TagDto[]> {
-    const tags = await this.tagRepository.find();
-    return tags.map(tagEntityToDto);
+  async getTags(pageable: PageableParams): Promise<Page<TagDto>> {
+    const size = pageable.size || 20;
+    const page = pageable.page || 1;
+
+    const [results, total] = await this.tagRepository.findAndCount({
+      order: {
+        audit: {
+          updatedDate: 'DESC',
+        },
+      },
+    });
+
+    return {
+      content: results.map(tagEntityToDto),
+      pageable: {
+        pageNumber: page,
+        pageSize: size,
+      },
+      totalPages: Math.ceil(total / size),
+      totalElements: total,
+    };
   }
 
   async createTag(name: string, userId: UUID): Promise<TagDto> {

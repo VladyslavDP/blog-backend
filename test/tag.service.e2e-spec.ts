@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TagEntity } from '@app/common/domain/entities/tag.entity';
 import { Repository } from 'typeorm';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { UUID } from '@app/common/types/common';
+import { PageableParams, UUID } from '@app/common/types/common';
 import { TagService } from '../src/modules/tag/tag.service';
 
 jest.setTimeout(30000);
@@ -12,7 +12,7 @@ describe('TagService', () => {
   let tagRepository: Repository<TagEntity>;
 
   const mockTagRepository = {
-    find: jest.fn(),
+    findAndCount: jest.fn(),
     save: jest.fn(),
     update: jest.fn(),
     softDelete: jest.fn(),
@@ -86,12 +86,19 @@ describe('TagService', () => {
         }),
       ];
 
-      jest.spyOn(tagRepository, 'find').mockResolvedValue(mockTags);
+      jest
+        .spyOn(tagRepository, 'findAndCount')
+        .mockResolvedValue([mockTags, mockTags.length]);
 
-      const result = await service.getTags();
+      const pageable: PageableParams = {
+        page: 1,
+        size: 20,
+      };
 
-      expect(tagRepository.find).toHaveBeenCalledTimes(1);
-      expect(result).toEqual(
+      const result = await service.getTags(pageable);
+
+      expect(tagRepository.findAndCount).toHaveBeenCalledTimes(1);
+      expect(result.content).toEqual(
         mockTags.map((tag) => ({ id: tag.id, name: tag.name })),
       );
     });

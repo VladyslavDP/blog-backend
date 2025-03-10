@@ -1,18 +1,21 @@
-import { Controller, Get, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, Query } from '@nestjs/common';
 import { TagService } from '@app/modules/tag/tag.service';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiOperation } from '@nestjs/swagger';
+import { Page, PageableParams } from '@app/common/types/common';
+import { TagDto } from '@app/modules/tag/dto/tag.dto';
+import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';
 
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
-  @Get('/tags')
+  @Get()
   @ApiOperation({
     summary: 'Get all tags',
   })
-  @ApiBearerAuth()
+  @ApiOkResponsePaginated(TagDto)
   @HttpCode(HttpStatus.OK)
-  async getTags() {
-    return this.tagService.getTags();
+  async getTags(@Query() pageable: PageableParams): Promise<Page<TagDto>> {
+    return this.tagService.getTags(pageable);
   }
 }

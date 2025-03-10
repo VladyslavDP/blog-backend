@@ -11,7 +11,7 @@ export class addTagTable1741355187534 implements MigrationInterface {
             "updated_by" uuid,
             "deleted_date" TIMESTAMP WITHOUT TIME ZONE,
             "deleted_by" uuid,
-            CONSTRAINT "clients_pk" PRIMARY KEY ("id")
+            CONSTRAINT "tags_pk" PRIMARY KEY ("id")
         )`);
   }
 
