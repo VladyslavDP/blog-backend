@@ -1,151 +1,74 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { TagEntity } from '@app/common/domain/entities/tag.entity';
 import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { PageableParams, UUID } from '@app/common/types/common';
+import { TagEntity } from '@app/common/domain/entities/tag.entity';
 import { TagService } from '../src/modules/tag/tag.service';
+import { TagCreateDto } from '@app/modules/tag/dto/tag-create.dto';
+import { TagUpdateDto } from '@app/modules/tag/dto/tag-update.dto';
+import { PageableParams, UUID } from '@app/common/types/common';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { AppModule } from '../src/app.module';
+import { getRepositoryToken } from '@nestjs/typeorm';
 
-jest.setTimeout(30000);
+jest.setTimeout(300000);
 
-describe('TagService', () => {
-  let service: TagService;
-  let tagRepository: Repository<TagEntity>;
+describe('TagService (e2e)', () => {
+  let app: INestApplication;
 
-  const mockTagRepository = {
-    findAndCount: jest.fn(),
-    save: jest.fn(),
-    update: jest.fn(),
-    softDelete: jest.fn(),
-  };
+  let tagService: TagService;
+  let repository: Repository<TagEntity>;
 
-  const mockTagEntity = {
-    id: 'example-uuid' as UUID,
-    name: 'TestTag',
-    audit: {
-      createdBy: 'user-id' as UUID,
-      createdDate: new Date(),
-      updatedBy: null,
-      updatedDate: null,
-      deletedBy: null,
-      deletedDate: null,
-    },
-  } as TagEntity;
-
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        TagService,
-        {
-          provide: getRepositoryToken(TagEntity),
-          useValue: mockTagRepository,
-        },
-      ],
+  beforeAll(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+      providers: [],
     }).compile();
+    app = moduleFixture.createNestApplication();
 
-    service = module.get<TagService>(TagService);
-    tagRepository = module.get<Repository<TagEntity>>(
+    repository = app.get<Repository<TagEntity>>(
       getRepositoryToken(TagEntity),
-    );
+    ) as Repository<TagEntity>;
+
+    tagService = app.select(AppModule).get(TagService);
   });
 
-  afterEach(() => {
-    jest.clearAllMocks();
+  afterAll(async () => {
+    await app.close();
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
-    expect(tagRepository).toBeDefined();
-  });
+  it('should perform CRUD operations in order', async () => {
+    const createDto: TagCreateDto = { name: 'TestTag' };
+    const userId: UUID = '00000000-0000-0000-0000-000000000000' as UUID;
 
-  describe('getTags', () => {
-    it('should return a list of tags', async () => {
-      const mockTags = [
-        Object.assign(new TagEntity(), {
-          id: 'example-uuid',
-          name: 'TestTag',
-          audit: {
-            createdBy: 'user-id',
-            createdDate: new Date(),
-            updatedBy: null,
-            updatedDate: null,
-            deletedBy: null,
-            deletedDate: null,
-          },
-        }),
-        Object.assign(new TagEntity(), {
-          id: 'another-uuid',
-          name: 'AnotherTag',
-          audit: {
-            createdBy: 'user-id',
-            createdDate: new Date(),
-            updatedBy: null,
-            updatedDate: null,
-            deletedBy: null,
-            deletedDate: null,
-          },
-        }),
-      ];
+    const createdTag = await tagService.createTag(createDto, userId);
 
-      jest
-        .spyOn(tagRepository, 'findAndCount')
-        .mockResolvedValue([mockTags, mockTags.length]);
+    expect(createdTag).toBeDefined();
+    expect(createdTag.id).toBeDefined();
+    expect(createdTag.name).toBe('TestTag');
 
-      const pageable: PageableParams = {
-        page: 1,
-        size: 20,
-      };
+    const updateDto: TagUpdateDto = { name: 'UpdatedTag' };
+    await tagService.update(createdTag.id, updateDto, userId);
 
-      const result = await service.getTags(pageable);
-
-      expect(tagRepository.findAndCount).toHaveBeenCalledTimes(1);
-      expect(result.content).toEqual(
-        mockTags.map((tag) => ({ id: tag.id, name: tag.name })),
-      );
+    const updatedTag = await repository.findOneOrFail({
+      where: { id: createdTag.id },
     });
-  });
 
-  describe('createTag', () => {
-    it('should create and return a tag', async () => {
-      const dto = {
-        name: mockTagEntity.name,
-        userId: mockTagEntity.audit.createdBy,
-      };
-      jest.spyOn(tagRepository, 'save').mockResolvedValue(mockTagEntity);
+    expect(updatedTag.name).toBe('UpdatedTag');
+    expect(updatedTag.audit.updatedBy).toBe(userId);
 
-      const result = await service.createTag(dto.name, dto.userId);
+    const pageable: PageableParams = { page: 1, size: 10 };
 
-      expect(tagRepository.save).toHaveBeenCalledWith({
-        name: dto.name,
-        userId: dto.userId,
-      });
-      expect(result).toEqual({
-        id: mockTagEntity.id,
-        name: mockTagEntity.name,
-      });
+    const tags = await tagService.getTags(pageable);
+
+    expect(tags.content.length).toBe(1);
+    expect(tags.content[0].id).toBe(createdTag.id);
+    expect(tags.content[0].name).toBe('UpdatedTag');
+
+    await tagService.delete(createdTag.id);
+
+    const deletedTag = await repository.findOne({
+      where: { id: createdTag.id },
     });
-  });
 
-  describe('update', () => {
-    it('should call the repository with correct arguments', async () => {
-      const updatedName = 'UpdatedName';
-      const updatedBy = 'updated-user-id' as UUID;
-
-      await service.update(mockTagEntity.id, updatedName, updatedBy);
-
-      expect(tagRepository.update).toHaveBeenCalledWith(mockTagEntity.id, {
-        name: updatedName,
-        audit: {
-          updatedBy: updatedBy,
-        },
-      });
-    });
-  });
-
-  describe('delete', () => {
-    it('should call softDelete with correct ID', async () => {
-      await service.delete(mockTagEntity.id);
-
-      expect(tagRepository.softDelete).toHaveBeenCalledWith(mockTagEntity.id);
-    });
+    expect(deletedTag).toBeNull();
   });
 });

@@ -28,7 +28,7 @@ beforeAll(async () => {
   process.env.PG_DATABASE_HOST = postgresContainer.getHost();
   process.env.PG_DATABASE_PORT = postgresContainer.getPort() + '';
   process.env.PG_DATABASE_USERNAME = postgresContainer.getUsername();
-  process.env.PG_DATABASE_PASSWORD = postgresContainer.getUsername();
+  process.env.PG_DATABASE_PASSWORD = postgresContainer.getPassword();
   process.env.PG_DATABASE_NAME = postgresContainer.getDatabase();
 });
 
