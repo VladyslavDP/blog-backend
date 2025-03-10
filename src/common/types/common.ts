@@ -127,3 +127,5 @@ export interface BufferedFile {
   size: number;
   buffer: Buffer | string;
 }
+
+export const adminUUID = '00000000-0000-0000-0000-000000000000';

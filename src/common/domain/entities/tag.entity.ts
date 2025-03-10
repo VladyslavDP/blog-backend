@@ -4,7 +4,11 @@ import { UUID } from '@app/common/types/common';
 
 @Entity('tags')
 export class TagEntity extends BaseEntity {
-  @PrimaryColumn({ type: 'uuid', nullable: false })
+  @PrimaryColumn({
+    type: 'uuid',
+    nullable: false,
+    default: () => 'uuid_generate_v4()',
+  })
   id: UUID;
 
   @Column({ type: 'varchar', nullable: false, unique: true })
