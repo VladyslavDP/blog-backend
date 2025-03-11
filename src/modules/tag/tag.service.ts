@@ -46,7 +46,7 @@ export class TagService {
     const { name } = dto;
     const tag = await this.tagRepository.save({
       name,
-      audit: { createdBy: userId },
+      audit: { createdBy: userId, updatedBy: userId },
     });
     return tagEntityToDto(tag);
   }

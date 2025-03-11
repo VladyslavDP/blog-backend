@@ -9,6 +9,7 @@ import {
   getDataSourceByName,
 } from 'typeorm-transactional';
 import { TagModule } from './modules/tag/tag.module';
+import { PostModule } from './modules/post/post.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TagModule } from './modules/tag/tag.module';
       },
     }),
     TagModule,
+    PostModule,
   ],
   controllers: [AppController],
   providers: [AppService],
