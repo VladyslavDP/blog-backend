@@ -24,12 +24,14 @@ export class TagController {
 
   @Post('create')
   @ApiOperation({ summary: 'Create tag' })
+  @HttpCode(HttpStatus.CREATED)
   async createTag(@Body() dto: TagCreateDto): Promise<void> {
     await this.tagService.createTag(dto, adminUUID);
   }
 
   @Put('update/:tagId')
   @ApiOperation({ summary: 'Update tag' })
+  @HttpCode(HttpStatus.OK)
   async updateTag(
     @Param('tagId') tagId: string,
     @Body() dto: TagUpdateDto,
@@ -39,6 +41,7 @@ export class TagController {
 
   @Delete('delete/:tagId')
   @ApiOperation({ summary: 'Delete tag' })
+  @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTag(@Param('tagId') tagId: string): Promise<void> {
     await this.tagService.delete(tagId);
   }

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { TagEntity } from '@app/common/domain/entities/tag.entity';
@@ -44,6 +44,13 @@ export class TagService {
 
   async createTag(dto: TagCreateDto, userId: UUID): Promise<TagDto> {
     const { name } = dto;
+
+    const existingTag = await this.tagRepository.findOne({ where: { name } });
+
+    if (existingTag) {
+      throw new BadRequestException('A tag with the same name already exists');
+    }
+
     const tag = await this.tagRepository.save({
       name,
       audit: { createdBy: userId, updatedBy: userId },

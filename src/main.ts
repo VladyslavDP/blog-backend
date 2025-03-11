@@ -5,6 +5,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { initializeTransactionalContext } from 'typeorm-transactional';
 import { AllExceptionsFilter } from '@app/common/filters/all-exceptions.filter';
 import { TagModule } from '@app/modules/tag/tag.module';
+import { PostModule } from '@app/modules/post/post.module';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -36,7 +37,7 @@ async function bootstrap() {
       description: 'Blog Core API description',
       version: 'v1',
       endpoint: 'swagger',
-      include: [TagModule],
+      include: [TagModule, PostModule],
     },
   ];
 

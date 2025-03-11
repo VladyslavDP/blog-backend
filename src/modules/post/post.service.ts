@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Page, PageableParams, UUID } from '@app/common/types/common';
@@ -54,6 +54,17 @@ export class PostService {
 
   async createPost(dto: PostCreateDto, userId: UUID) {
     const tags = await this.processTags(dto.tags, userId);
+
+    const existingPost = await this.postRepository.findOne({
+      where: [{ slug: dto.slug }, { title: dto.title }],
+    });
+
+    if (existingPost) {
+      throw new BadRequestException(
+        'A post with the same slug or title already exists',
+      );
+    }
+
     const post = this.postRepository.create({
       title: dto.title,
       slug: dto.slug,
