@@ -1,10 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, In } from 'typeorm';
-import { UUID } from '@app/common/types/common';
+import { In, Repository } from 'typeorm';
+import { Page, PageableParams, UUID } from '@app/common/types/common';
 import { PostEntity } from '@app/common/domain/entities/post.entity';
 import { PostCreateDto } from '@app/modules/post/dto/post-create.dto';
 import { TagEntity } from '@app/common/domain/entities/tag.entity';
+import { PostUpdateDto } from '@app/modules/post/dto/post-update.dto';
+import {
+  postEntityToDto,
+  postEntityToExtendedDto,
+} from '@app/modules/post/mapper/post.mapper';
+import { PostDto } from '@app/modules/post/dto/post.dto';
 
 @Injectable()
 export class PostService {
@@ -16,10 +22,16 @@ export class PostService {
   ) {}
 
   private getPostByIdOrFail(ID: UUID): Promise<PostEntity> {
-    return this.postRepository.findOneOrFail({ where: { id: ID } });
+    return this.postRepository.findOneOrFail({
+      where: { id: ID },
+      relations: ['tags'],
+    });
   }
 
-  private async processTags(tagNames: string[]): Promise<TagEntity[]> {
+  private async processTags(
+    tagNames: string[],
+    userId: UUID,
+  ): Promise<TagEntity[]> {
     const existingTags = await this.tagRepository.find({
       where: { name: In(tagNames) },
     });
@@ -30,15 +42,18 @@ export class PostService {
     );
 
     const newTags = newTagNames.map((name) =>
-      this.tagRepository.create({ name }),
+      this.tagRepository.create({
+        name,
+        audit: { createdBy: userId, updatedBy: userId },
+      }),
     );
     await this.tagRepository.save(newTags);
 
     return [...existingTags, ...newTags];
   }
 
-  async createPost(dto: PostCreateDto, userId: UUID): Promise<PostEntity> {
-    const tags = await this.processTags(dto.tags);
+  async createPost(dto: PostCreateDto, userId: UUID) {
+    const tags = await this.processTags(dto.tags, userId);
     const post = this.postRepository.create({
       title: dto.title,
       slug: dto.slug,
@@ -51,11 +66,23 @@ export class PostService {
       },
     });
 
-    return this.postRepository.save(post);
+    await this.postRepository.save(post);
   }
 
-  async updatePost(ID: UUID, dto: any, userId: UUID) {
-    console.log('updatePost');
+  async updatePost(ID: UUID, dto: PostUpdateDto, userId: UUID): Promise<void> {
+    const { tags, ...rest } = dto;
+
+    const post = await this.getPostByIdOrFail(ID);
+
+    Object.assign(post, rest);
+
+    if (tags) {
+      post.tags = await this.processTags(tags, userId);
+    }
+
+    post.audit.updatedBy = userId;
+
+    await this.postRepository.save(post);
   }
 
   async deletePost(ID: UUID) {
@@ -65,10 +92,29 @@ export class PostService {
 
   async getPost(ID: UUID) {
     const post = await this.getPostByIdOrFail(ID);
-    return post;
+    return postEntityToExtendedDto(post);
   }
 
-  async getPosts() {
-    console.log('getPosts');
+  async getPosts(pageable: PageableParams): Promise<Page<PostDto>> {
+    const size = pageable.size || 20;
+    const page = pageable.page || 1;
+
+    const [results, total] = await this.postRepository.findAndCount({
+      order: {
+        audit: {
+          updatedDate: 'DESC',
+        },
+      },
+    });
+
+    return {
+      content: results.map(postEntityToDto),
+      pageable: {
+        pageNumber: page,
+        pageSize: size,
+      },
+      totalPages: Math.ceil(total / size),
+      totalElements: total,
+    };
   }
 }
