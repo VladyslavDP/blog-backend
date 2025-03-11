@@ -1,6 +1,7 @@
+import { DataSourceOptions } from 'typeorm';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-const ormConfig: TypeOrmModuleOptions = {
+export const dataSourceOptions: DataSourceOptions = {
   ...(process.env.PG_DATABASE_SSL === 'true' && { ssl: true }),
   type: 'postgres',
   host: process.env.PG_DATABASE_HOST,
@@ -11,12 +12,7 @@ const ormConfig: TypeOrmModuleOptions = {
   migrations: [__dirname + '/database/migrations/*{.js,.ts}'],
   entities: [__dirname + '/common/domain/entities/**/*.entity{.js,.ts}'],
   synchronize: false,
-  migrationsRun: true,
-  migrationsTransactionMode: 'each',
   logging: false,
-  // keepConnectionAlive: true,
-  retryAttempts: 10,
-  retryDelay: 2000,
   extra: {
     poolSize: +process.env.PG_DATABASE_POOL_SIZE || 20,
     connectionTimeoutMillis: 10000,
@@ -27,6 +23,14 @@ const ormConfig: TypeOrmModuleOptions = {
       },
     }),
   },
+};
+
+const ormConfig: TypeOrmModuleOptions = {
+  ...dataSourceOptions,
+  migrationsRun: true,
+  migrationsTransactionMode: 'each',
+  retryAttempts: 10,
+  retryDelay: 2000,
   cache: {
     type: 'ioredis',
     options: {

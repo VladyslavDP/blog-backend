@@ -15,7 +15,8 @@
     "strictNullChecks": false,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "forceConsistentCasingInFileNames": false,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
     "noFallthroughCasesInSwitch": false,
     "paths": {
       "@app": [
@@ -32,6 +33,7 @@
       ],
     },
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }
 

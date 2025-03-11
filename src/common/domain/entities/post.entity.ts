@@ -36,6 +36,9 @@ export class PostEntity extends BaseEntity {
   })
   tags: TagEntity[];
 
+  @Column({ name: 'time_to_read', type: 'smallint', nullable: false })
+  timeToRead: number;
+
   @Column(() => Audit, { prefix: false })
   audit: Audit;
 }
