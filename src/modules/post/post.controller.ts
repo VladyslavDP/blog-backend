@@ -52,11 +52,11 @@ export class PostController {
     await this.postService.deletePost(postId);
   }
 
-  @Get('get/:postId')
-  @ApiOperation({ summary: 'Get a post by ID' })
+  @Get('get/:slug')
+  @ApiOperation({ summary: 'Get a post by slug' })
   @HttpCode(HttpStatus.OK)
-  async getPost(@Param('postId') postId: UUID): Promise<PostDto> {
-    return this.postService.getPost(postId);
+  async getPost(@Param('slug') slug: string): Promise<PostDto> {
+    return this.postService.getPost(slug);
   }
 
   @Get()

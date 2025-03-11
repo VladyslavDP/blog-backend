@@ -101,8 +101,12 @@ export class PostService {
     await this.postRepository.softDelete(ID);
   }
 
-  async getPost(ID: UUID) {
-    const post = await this.getPostByIdOrFail(ID);
+  async getPost(slug: string) {
+    const post = await this.postRepository.findOneOrFail({
+      where: { slug },
+      relations: ['tags'],
+    });
+
     return postEntityToExtendedDto(post);
   }
 

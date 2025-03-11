@@ -93,7 +93,7 @@ describe('PostService (e2e)', () => {
     expect(updatedPost.audit.updatedBy).toBe(userId);
 
     // Get post
-    const postDto = await postService.getPost(updatedPost.id);
+    const postDto = await postService.getPost(updatedPost.slug);
 
     expect(postDto.id).toBe(updatedPost.id);
     expect(postDto.title).toBe(updatedPost.title);
