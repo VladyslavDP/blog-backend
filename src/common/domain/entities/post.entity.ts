@@ -41,4 +41,7 @@ export class PostEntity extends BaseEntity {
 
   @Column(() => Audit, { prefix: false })
   audit: Audit;
+
+  @Column({ type: 'boolean', nullable: false, default: true })
+  isActive: boolean;
 }

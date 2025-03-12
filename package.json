@@ -22,6 +22,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "env-cmd -f .env.test.development jest --config ./test/jest-e2e.json",
+    "migration:create": "ts-node ./node_modules/typeorm/cli.js migration:create src/database/migrations/$(echo $npm_config_name)",
     "migration:run": "env-cmd -f .env.develop ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:run -d ./src/data-source.ts",
     "migration:revert": "env-cmd -f .env.develop ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js migration:revert -d ./src/data-source.ts",
     "prepare": "husky install"
