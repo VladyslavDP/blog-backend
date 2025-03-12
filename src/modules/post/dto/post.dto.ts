@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { UUID } from '@app/common/types/common';
+import { UUID } from '@app/common/types';
 
 export class PostDto {
   @ApiProperty({

@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
 import { Audit } from '@app/common/domain/entities/audit.entity';
-import { UUID } from '@app/common/types/common';
+import { UUID } from '@app/common/types';
 import { PostEntity } from '@app/common/domain/entities/post.entity';
 
 @Entity('tags')

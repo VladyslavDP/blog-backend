@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { Page, PageableParams, UUID } from '@app/common/types/common';
+import { Page, PageableParams, UUID } from '@app/common/types';
 import { PostEntity } from '@app/common/domain/entities/post.entity';
 import { PostCreateDto } from '@app/modules/post/dto/post-create.dto';
 import { TagEntity } from '@app/common/domain/entities/tag.entity';

@@ -1,6 +1,6 @@
 import { BaseEntity, Column, Entity, PrimaryColumn } from 'typeorm';
 import { Audit } from '@app/common/domain/entities/audit.entity';
-import { UUID } from '@app/common/types/common';
+import { UUID } from '@app/common/types';
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
@@ -12,7 +12,7 @@ export class UserEntity extends BaseEntity {
   id: UUID;
 
   @Column({
-    name: 'email',
+    name: 'nick_name',
     unique: true,
   })
   nickName: string;

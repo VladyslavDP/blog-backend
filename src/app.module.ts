@@ -10,6 +10,7 @@ import {
 } from 'typeorm-transactional';
 import { TagModule } from './modules/tag/tag.module';
 import { PostModule } from './modules/post/post.module';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { PostModule } from './modules/post/post.module';
     }),
     TagModule,
     PostModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

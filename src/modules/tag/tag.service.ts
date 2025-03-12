@@ -4,7 +4,7 @@ import { Repository } from 'typeorm';
 import { TagEntity } from '@app/common/domain/entities/tag.entity';
 import { tagEntityToDto } from '@app/modules/tag/mapper/tag.mapper';
 import { TagDto } from './dto/tag.dto';
-import { Page, PageableParams, UUID } from '@app/common/types/common';
+import { Page, PageableParams, UUID } from '@app/common/types';
 import { TagCreateDto } from '@app/modules/tag/dto/tag-create.dto';
 import { TagUpdateDto } from '@app/modules/tag/dto/tag-update.dto';
 

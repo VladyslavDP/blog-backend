@@ -14,7 +14,7 @@ export class AddedUsersTable1741790132947 implements MigrationInterface {
           },
           { name: 'email', type: 'varchar', length: '255', isNullable: false },
           {
-            name: 'nickName',
+            name: 'nick_name',
             type: 'varchar',
             length: '255',
             isNullable: false,

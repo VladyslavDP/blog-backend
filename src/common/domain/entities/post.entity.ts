@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { TagEntity } from '@app/common/domain/entities/tag.entity';
 import { Audit } from '@app/common/domain/entities/audit.entity';
-import { UUID } from '@app/common/types/common';
+import { UUID } from '@app/common/types';
 
 @Entity('posts')
 export class PostEntity extends BaseEntity {

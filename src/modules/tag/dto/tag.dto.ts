@@ -1,4 +1,4 @@
-import { UUID } from '@app/common/types/common';
+import { UUID } from '@app/common/types';
 
 export class TagDto {
   id: UUID;

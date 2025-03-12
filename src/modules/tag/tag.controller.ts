@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { TagService } from '@app/modules/tag/tag.service';
 import { ApiOperation } from '@nestjs/swagger';
-import { adminUUID, Page, PageableParams } from '@app/common/types/common';
+import { adminUUID, Page, PageableParams } from '@app/common/types';
 import { TagDto } from '@app/modules/tag/dto/tag.dto';
 import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';
 import { TagCreateDto } from '@app/modules/tag/dto/tag-create.dto';

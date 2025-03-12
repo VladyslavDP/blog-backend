@@ -11,12 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  adminUUID,
-  Page,
-  PageableParams,
-  UUID,
-} from '@app/common/types/common';
+import { adminUUID, Page, PageableParams, UUID } from '@app/common/types';
 import { PostService } from '@app/modules/post/post.service';
 import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';
 import { PostDto } from '@app/modules/post/dto/post.dto';

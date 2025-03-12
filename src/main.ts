@@ -3,7 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { initializeTransactionalContext } from 'typeorm-transactional';
-import { AllExceptionsFilter } from '@app/common/filters/all-exceptions.filter';
+import { AllExceptionsFilter } from '@app/common/filters';
 import { TagModule } from '@app/modules/tag/tag.module';
 import { PostModule } from '@app/modules/post/post.module';
 
