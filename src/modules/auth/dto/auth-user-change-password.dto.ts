@@ -1,14 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  Length,
-  Matches,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, Matches } from 'class-validator';
 import { PASSWORD_PATTERN } from '@app/common/utils';
 
-export class AuthUserCreateDto {
+export class AuthUserChangePasswordDto {
   @ApiProperty({ type: String })
   @IsNotEmpty()
   @IsEmail()
@@ -16,13 +10,13 @@ export class AuthUserCreateDto {
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
-  @IsString()
-  @Length(3, 15)
-  nickName: string;
+  @IsNotEmpty()
+  @Matches(PASSWORD_PATTERN)
+  oldPassword: string;
 
   @ApiProperty({ type: String })
   @IsNotEmpty()
   @IsNotEmpty()
   @Matches(PASSWORD_PATTERN)
-  password: string;
+  newPassword: string;
 }

@@ -1,13 +1,14 @@
 {
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
-  "setupFilesAfterEnv": ["./setup-db.e2e.ts"],
+  "setupFilesAfterEnv": ["./jest-setup.ts", "./setup-db.e2e.ts"],
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
+    "^#node-web-compat$": "<rootDir>/../node_modules/aws-jwt-verify/dist/cjs/node-web-compat-node.js",
     "^@app/modules/(.*)$": "<rootDir>/../src/modules/$1",
     "^@app/auth/(.*)$": "<rootDir>/../src/modules/auth/$1",
     "^@app/common/(.*)$": "<rootDir>/../src/common/$1",
