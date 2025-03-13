@@ -12,11 +12,5 @@ export class AuthUserChangePasswordDto {
   @IsNotEmpty()
   @IsNotEmpty()
   @Matches(PASSWORD_PATTERN)
-  oldPassword: string;
-
-  @ApiProperty({ type: String })
-  @IsNotEmpty()
-  @IsNotEmpty()
-  @Matches(PASSWORD_PATTERN)
   newPassword: string;
 }
