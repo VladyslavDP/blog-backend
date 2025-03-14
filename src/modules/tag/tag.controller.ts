@@ -23,15 +23,15 @@ import { ApiOperationProtected } from '@app/common/api-protected.decorator';
 
 @ApiBearerAuth()
 @Controller('tag')
+@Authorization({
+  allowedGroups: [ERoles.USER],
+})
 export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post('create')
   @ApiOperationProtected({ summary: 'Create tag' })
   @HttpCode(HttpStatus.CREATED)
-  @Authorization({
-    allowedGroups: [ERoles.USER],
-  })
   async createTag(
     @CognitoUser() user: CognitoJwtPayload,
     @Body() dto: TagCreateDto,
@@ -42,9 +42,6 @@ export class TagController {
   @Put('update/:tagId')
   @ApiOperationProtected({ summary: 'Update tag' })
   @HttpCode(HttpStatus.OK)
-  @Authorization({
-    allowedGroups: [ERoles.USER],
-  })
   async updateTag(
     @CognitoUser() user: CognitoJwtPayload,
     @Param('tagId') tagId: string,
@@ -64,7 +61,7 @@ export class TagController {
   }
 
   @Get()
-  @ApiOperation({
+  @ApiOperationProtected({
     summary: 'Get all tags',
   })
   @ApiOkResponsePaginated(TagDto)

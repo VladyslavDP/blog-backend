@@ -12,7 +12,7 @@ import { UsernameType } from 'aws-sdk/clients/cognitoidentityserviceprovider';
 import { AuthUserSignInDto } from '@app/modules/auth/dto/auth-user-sign-in.dto';
 import { CognitoRegisterResponseDto } from '@app/modules/cognito/dto/cognito-register-response.dto';
 import { TTL_24H } from '@app/common/utils';
-import { UUID } from '@app/common/types';
+import { ERoles, UUID } from '@app/common/types';
 import {
   CognitoSignInResponseDto,
   CognitoSignInTokenResponseDto,
@@ -66,6 +66,14 @@ export class CognitoService {
     const {
       User: { Username, Attributes },
     } = await this.cognito.adminCreateUser(params).promise();
+
+    await this.cognito
+      .adminAddUserToGroup({
+        UserPoolId: this.userPoolId,
+        Username: email,
+        GroupName: ERoles.USER,
+      })
+      .promise();
 
     return { Username, Attributes };
   }
@@ -144,5 +152,14 @@ export class CognitoService {
     } = response;
 
     return { AccessToken, RefreshToken, ExpiresIn };
+  }
+
+  @HandleErrors()
+  async signOut(accessToken: string): Promise<void> {
+    await this.cognito
+      .globalSignOut({
+        AccessToken: accessToken,
+      })
+      .promise();
   }
 }

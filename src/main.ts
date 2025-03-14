@@ -6,6 +6,7 @@ import { initializeTransactionalContext } from 'typeorm-transactional';
 import { AllExceptionsFilter } from '@app/common/filters';
 import { TagModule } from '@app/modules/tag/tag.module';
 import { PostModule } from '@app/modules/post/post.module';
+import { AuthModule } from '@app/modules/auth/auth.module';
 
 async function bootstrap() {
   initializeTransactionalContext();
@@ -37,7 +38,7 @@ async function bootstrap() {
       description: 'Blog Core API description',
       version: 'v1',
       endpoint: 'swagger',
-      include: [TagModule, PostModule],
+      include: [TagModule, AuthModule, PostModule],
     },
   ];
 
