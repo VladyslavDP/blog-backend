@@ -11,13 +11,16 @@ import {
   Query,
 } from '@nestjs/common';
 import { TagService } from '@app/modules/tag/tag.service';
-import { ApiOperation } from '@nestjs/swagger';
-import { adminUUID, Page, PageableParams } from '@app/common/types';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { Page, PageableParams } from '@app/common/types';
 import { TagDto } from '@app/modules/tag/dto/tag.dto';
 import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';
 import { TagCreateDto } from '@app/modules/tag/dto/tag-create.dto';
 import { TagUpdateDto } from '@app/modules/tag/dto/tag-update.dto';
+import { Authorization, CognitoUser } from '@nestjs-cognito/auth';
+import { CognitoJwtPayload } from '@nestjs-cognito/core';
 
+@ApiBearerAuth()
 @Controller('tag')
 export class TagController {
   constructor(private readonly tagService: TagService) {}
@@ -25,18 +28,28 @@ export class TagController {
   @Post('create')
   @ApiOperation({ summary: 'Create tag' })
   @HttpCode(HttpStatus.CREATED)
-  async createTag(@Body() dto: TagCreateDto): Promise<void> {
-    await this.tagService.createTag(dto, adminUUID);
+  @Authorization({
+    allowedGroups: ['user'],
+  })
+  async createTag(
+    @CognitoUser() user: CognitoJwtPayload,
+    @Body() dto: TagCreateDto,
+  ): Promise<void> {
+    await this.tagService.createTag(dto, user.sub);
   }
 
   @Put('update/:tagId')
   @ApiOperation({ summary: 'Update tag' })
   @HttpCode(HttpStatus.OK)
+  @Authorization({
+    allowedGroups: ['user'],
+  })
   async updateTag(
+    @CognitoUser() user: CognitoJwtPayload,
     @Param('tagId') tagId: string,
     @Body() dto: TagUpdateDto,
   ): Promise<void> {
-    await this.tagService.update(tagId, dto, adminUUID);
+    await this.tagService.update(tagId, dto, user.sub);
   }
 
   @Delete('delete/:tagId')

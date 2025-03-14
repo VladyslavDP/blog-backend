@@ -109,7 +109,7 @@ describe('PostService (e2e)', () => {
     expect(paginatedResult.content[0].id).toBe(updatedPost.id);
 
     // Delete step
-    await postService.deletePost(updatedPost.id);
+    await postService.deletePost(updatedPost.id, userId);
 
     const deletedPost = await postRepository.findOne({
       where: { id: updatedPost.id },

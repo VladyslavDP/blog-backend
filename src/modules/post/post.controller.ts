@@ -10,14 +10,17 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { adminUUID, Page, PageableParams, UUID } from '@app/common/types';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Page, PageableParams, UUID } from '@app/common/types';
 import { PostService } from '@app/modules/post/post.service';
 import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';
 import { PostDto } from '@app/modules/post/dto/post.dto';
 import { PostCreateDto } from '@app/modules/post/dto/post-create.dto';
 import { PostUpdateDto } from '@app/modules/post/dto/post-update.dto';
+import { Authorization, CognitoUser } from '@nestjs-cognito/auth';
+import { CognitoJwtPayload } from '@nestjs-cognito/core';
 
+@ApiBearerAuth()
 @ApiTags('Post')
 @Controller('post')
 export class PostController {
@@ -26,25 +29,41 @@ export class PostController {
   @Post('create')
   @ApiOperation({ summary: 'Create a new post' })
   @HttpCode(HttpStatus.CREATED)
-  async createPost(@Body() dto: PostCreateDto): Promise<void> {
-    await this.postService.createPost(dto, adminUUID);
+  @Authorization({
+    allowedGroups: ['user'],
+  })
+  async createPost(
+    @CognitoUser() user: CognitoJwtPayload,
+    @Body() dto: PostCreateDto,
+  ): Promise<void> {
+    await this.postService.createPost(dto, user.sub);
   }
 
   @Put('update/:postId')
   @ApiOperation({ summary: 'Update an existing post' })
   @HttpCode(HttpStatus.OK)
+  @Authorization({
+    allowedGroups: ['user'],
+  })
   async updatePost(
+    @CognitoUser() user: CognitoJwtPayload,
     @Param('postId') postId: UUID,
     @Body() dto: PostUpdateDto,
   ): Promise<void> {
-    await this.postService.updatePost(postId, dto, adminUUID);
+    await this.postService.updatePost(postId, dto, user.sub);
   }
 
   @Delete('delete/:postId')
   @ApiOperation({ summary: 'Delete a post by ID' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePost(@Param('postId') postId: UUID): Promise<void> {
-    await this.postService.deletePost(postId);
+  @Authorization({
+    allowedGroups: ['user'],
+  })
+  async deletePost(
+    @CognitoUser() user: CognitoJwtPayload,
+    @Param('postId') postId: UUID,
+  ): Promise<void> {
+    await this.postService.deletePost(postId, user.sub);
   }
 
   @Get('get/:slug')

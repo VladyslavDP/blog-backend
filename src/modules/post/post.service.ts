@@ -96,8 +96,9 @@ export class PostService {
     await this.postRepository.save(post);
   }
 
-  async deletePost(ID: UUID) {
+  async deletePost(ID: UUID, userId: UUID) {
     await this.getPostByIdOrFail(ID);
+    await this.postRepository.update(ID, { audit: { deletedBy: userId } });
     await this.postRepository.softDelete(ID);
   }
 
