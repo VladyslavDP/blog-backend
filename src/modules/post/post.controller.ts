@@ -19,6 +19,7 @@ import { PostCreateDto } from '@app/modules/post/dto/post-create.dto';
 import { PostUpdateDto } from '@app/modules/post/dto/post-update.dto';
 import { Authorization, CognitoUser } from '@nestjs-cognito/auth';
 import { CognitoJwtPayload } from '@nestjs-cognito/core';
+import { ApiOperationProtected } from '@app/common/api-protected.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Post')
@@ -27,7 +28,7 @@ export class PostController {
   constructor(private readonly postService: PostService) {}
 
   @Post('create')
-  @ApiOperation({ summary: 'Create a new post' })
+  @ApiOperationProtected({ summary: 'Create a new post' })
   @HttpCode(HttpStatus.CREATED)
   @Authorization({
     allowedGroups: ['user'],
@@ -40,7 +41,7 @@ export class PostController {
   }
 
   @Put('update/:postId')
-  @ApiOperation({ summary: 'Update an existing post' })
+  @ApiOperationProtected({ summary: 'Update an existing post' })
   @HttpCode(HttpStatus.OK)
   @Authorization({
     allowedGroups: ['user'],
@@ -54,7 +55,7 @@ export class PostController {
   }
 
   @Delete('delete/:postId')
-  @ApiOperation({ summary: 'Delete a post by ID' })
+  @ApiOperationProtected({ summary: 'Delete a post by ID' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @Authorization({
     allowedGroups: ['user'],

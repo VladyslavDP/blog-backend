@@ -12,13 +12,14 @@ import {
 } from '@nestjs/common';
 import { TagService } from '@app/modules/tag/tag.service';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
-import { Page, PageableParams } from '@app/common/types';
+import { ERoles, Page, PageableParams } from '@app/common/types';
 import { TagDto } from '@app/modules/tag/dto/tag.dto';
 import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';
 import { TagCreateDto } from '@app/modules/tag/dto/tag-create.dto';
 import { TagUpdateDto } from '@app/modules/tag/dto/tag-update.dto';
 import { Authorization, CognitoUser } from '@nestjs-cognito/auth';
 import { CognitoJwtPayload } from '@nestjs-cognito/core';
+import { ApiOperationProtected } from '@app/common/api-protected.decorator';
 
 @ApiBearerAuth()
 @Controller('tag')
@@ -26,10 +27,10 @@ export class TagController {
   constructor(private readonly tagService: TagService) {}
 
   @Post('create')
-  @ApiOperation({ summary: 'Create tag' })
+  @ApiOperationProtected({ summary: 'Create tag' })
   @HttpCode(HttpStatus.CREATED)
   @Authorization({
-    allowedGroups: ['user'],
+    allowedGroups: [ERoles.USER],
   })
   async createTag(
     @CognitoUser() user: CognitoJwtPayload,
@@ -39,10 +40,10 @@ export class TagController {
   }
 
   @Put('update/:tagId')
-  @ApiOperation({ summary: 'Update tag' })
+  @ApiOperationProtected({ summary: 'Update tag' })
   @HttpCode(HttpStatus.OK)
   @Authorization({
-    allowedGroups: ['user'],
+    allowedGroups: [ERoles.USER],
   })
   async updateTag(
     @CognitoUser() user: CognitoJwtPayload,
@@ -53,10 +54,13 @@ export class TagController {
   }
 
   @Delete('delete/:tagId')
-  @ApiOperation({ summary: 'Delete tag' })
+  @ApiOperationProtected({ summary: 'Delete tag' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteTag(@Param('tagId') tagId: string): Promise<void> {
-    await this.tagService.delete(tagId);
+  async deleteTag(
+    @CognitoUser() user: CognitoJwtPayload,
+    @Param('tagId') tagId: string,
+  ): Promise<void> {
+    await this.tagService.delete(tagId, user.sub);
   }
 
   @Get()

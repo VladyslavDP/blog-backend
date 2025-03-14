@@ -7,6 +7,7 @@ import { TagDto } from './dto/tag.dto';
 import { Page, PageableParams, UUID } from '@app/common/types';
 import { TagCreateDto } from '@app/modules/tag/dto/tag-create.dto';
 import { TagUpdateDto } from '@app/modules/tag/dto/tag-update.dto';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class TagService {
@@ -42,6 +43,7 @@ export class TagService {
     };
   }
 
+  @Transactional()
   async createTag(dto: TagCreateDto, userId: UUID): Promise<TagDto> {
     const { name } = dto;
 
@@ -58,6 +60,7 @@ export class TagService {
     return tagEntityToDto(tag);
   }
 
+  @Transactional()
   async update(ID: UUID, dto: TagUpdateDto, userId: UUID): Promise<void> {
     const { name } = dto;
 
@@ -66,8 +69,11 @@ export class TagService {
     await this.tagRepository.update(ID, { name, audit: { updatedBy: userId } });
   }
 
-  async delete(ID: UUID): Promise<void> {
+  @Transactional()
+  async delete(ID: UUID, userId: UUID): Promise<void> {
     await this.getTagByIdOrFail(ID);
+
+    await this.tagRepository.update(ID, { audit: { deletedBy: userId } });
     await this.tagRepository.softDelete(ID);
   }
 }

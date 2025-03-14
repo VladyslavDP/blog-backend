@@ -129,3 +129,9 @@ export interface BufferedFile {
 }
 
 export const adminUUID = '00000000-0000-0000-0000-000000000000';
+
+export enum ERoles {
+  USER = 'user',
+  ADMIN = 'admin',
+  MODERATOR = 'moderator',
+}

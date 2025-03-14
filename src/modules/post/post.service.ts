@@ -11,6 +11,7 @@ import {
   postEntityToExtendedDto,
 } from '@app/modules/post/mapper/post.mapper';
 import { PostDto } from '@app/modules/post/dto/post.dto';
+import { Transactional } from 'typeorm-transactional';
 
 @Injectable()
 export class PostService {
@@ -28,6 +29,7 @@ export class PostService {
     });
   }
 
+  @Transactional()
   private async processTags(
     tagNames: string[],
     userId: UUID,
@@ -52,6 +54,7 @@ export class PostService {
     return [...existingTags, ...newTags];
   }
 
+  @Transactional()
   async createPost(dto: PostCreateDto, userId: UUID) {
     const tags = await this.processTags(dto.tags, userId);
 
@@ -80,6 +83,7 @@ export class PostService {
     await this.postRepository.save(post);
   }
 
+  @Transactional()
   async updatePost(ID: UUID, dto: PostUpdateDto, userId: UUID): Promise<void> {
     const { tags, ...rest } = dto;
 
@@ -96,6 +100,7 @@ export class PostService {
     await this.postRepository.save(post);
   }
 
+  @Transactional()
   async deletePost(ID: UUID, userId: UUID) {
     await this.getPostByIdOrFail(ID);
     await this.postRepository.update(ID, { audit: { deletedBy: userId } });

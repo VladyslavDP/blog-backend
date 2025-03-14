@@ -63,7 +63,7 @@ describe('TagService (e2e)', () => {
     expect(tags.content[0].id).toBe(createdTag.id);
     expect(tags.content[0].name).toBe('UpdatedTag');
 
-    await tagService.delete(createdTag.id);
+    await tagService.delete(createdTag.id, userId);
 
     const deletedTag = await repository.findOne({
       where: { id: createdTag.id },
