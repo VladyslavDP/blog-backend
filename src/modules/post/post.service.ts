@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository, FindOptionsWhere, ILike } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Page, PageableParams, UUID } from '@app/common/types';
 import { PostEntity } from '@app/common/domain/entities/post.entity';
 import { PostCreateDto } from '@app/modules/post/dto/post-create.dto';
@@ -157,7 +157,7 @@ export class PostService {
 
     if (search) {
       queryBuilder.andWhere(
-        'post.title ILIKE :search OR post.content ILIKE :search',
+        'post.title ILIKE :search OR post.content ILIKE :search OR post.slug ILIKE :search',
         { search: `%${search}%` },
       );
     }
