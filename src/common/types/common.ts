@@ -38,13 +38,13 @@ export class PageableParams {
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
-  @ApiProperty({ description: 'Page number', required: false })
+  @ApiProperty({ description: 'Page number', required: false, example: 1 })
   page?: number = 1;
 
   @IsNumber()
   @IsOptional()
   @Type(() => Number)
-  @ApiProperty({ description: 'Page size', required: false })
+  @ApiProperty({ description: 'Page size', required: false, example: 10 })
   size?: number = 10;
 }
 

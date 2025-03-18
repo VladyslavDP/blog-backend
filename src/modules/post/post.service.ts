@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { In, Repository } from 'typeorm';
+import { In, Repository, FindOptionsWhere, ILike } from 'typeorm';
 import { Page, PageableParams, UUID } from '@app/common/types';
 import { PostEntity } from '@app/common/domain/entities/post.entity';
 import { PostCreateDto } from '@app/modules/post/dto/post-create.dto';
@@ -126,10 +126,58 @@ export class PostService {
           updatedDate: 'DESC',
         },
       },
+      relations: ['tags'],
     });
 
     return {
       content: results.map(postEntityToDto),
+      pageable: {
+        pageNumber: page,
+        pageSize: size,
+      },
+      totalPages: Math.ceil(total / size),
+      totalElements: total,
+    };
+  }
+
+  async searchPosts(
+    pageable: PageableParams,
+    tags: string[],
+    search: string,
+  ): Promise<Page<PostDto>> {
+    const size = pageable.size || 20;
+    const page = pageable.page || 1;
+
+    const queryBuilder = this.postRepository.createQueryBuilder('post');
+    queryBuilder.leftJoinAndSelect('post.tags', 'tag');
+
+    if (tags.length) {
+      queryBuilder.andWhere('tag.name IN (:...tags)', { tags });
+    }
+
+    if (search) {
+      queryBuilder.andWhere(
+        'post.title ILIKE :search OR post.content ILIKE :search',
+        { search: `%${search}%` },
+      );
+    }
+
+    queryBuilder
+      .orderBy('post.audit.updatedDate', 'ASC')
+      .skip((page - 1) * size)
+      .take(size);
+
+    const [result, total] = await queryBuilder.getManyAndCount();
+
+    const postIds = result.map((post) => post.id);
+
+    const completePosts = await this.postRepository.find({
+      where: { id: In(postIds) },
+      relations: ['tags'],
+    });
+
+    return {
+      content: completePosts.map(postEntityToDto),
       pageable: {
         pageNumber: page,
         pageSize: size,

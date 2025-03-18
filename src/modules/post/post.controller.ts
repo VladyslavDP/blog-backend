@@ -10,7 +10,12 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiOperation,
+  ApiQuery,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Page, PageableParams, UUID } from '@app/common/types';
 import { PostService } from '@app/modules/post/post.service';
 import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';
@@ -80,5 +85,36 @@ export class PostController {
   @HttpCode(HttpStatus.OK)
   async getPosts(@Query() pageable: PageableParams): Promise<Page<PostDto>> {
     return this.postService.getPosts(pageable);
+  }
+
+  @Get('search')
+  @ApiOperation({ summary: 'Search posts by tags and query' })
+  @ApiQuery({
+    name: 'tags',
+    required: false,
+    type: String,
+    description: 'Comma-separated list of tags',
+  })
+  @ApiQuery({
+    name: 'pageable',
+    required: true,
+    type: PageableParams,
+    description: 'Pageble params',
+  })
+  @ApiQuery({
+    name: 'query',
+    required: false,
+    type: String,
+    description: 'Search query string',
+  })
+  @ApiOkResponsePaginated(PostDto)
+  @HttpCode(HttpStatus.OK)
+  async searchPosts(
+    @Query('tags') tags: string,
+    @Query('query') query: string,
+    @Query('pageable') pageable: PageableParams,
+  ): Promise<Page<PostDto>> {
+    const tagList = tags ? tags.split(',') : [];
+    return this.postService.searchPosts(pageable, tagList, query);
   }
 }

@@ -117,4 +117,74 @@ describe('PostService (e2e)', () => {
 
     expect(deletedPost).toBeNull();
   });
+
+  it('should test the searchPosts method', async () => {
+    const userId: UUID = '00000000-0000-0000-0000-000000000000' as UUID;
+
+    const bulkPosts = Array.from({ length: 10 }, (_, i) => ({
+      title: `Test Post ${i + 1}`,
+      slug: `test-post-${i + 1}`,
+      content: `This is content for post ${i + 1}`,
+      tags: i % 2 === 0 ? ['nestjs', 'typescript'] : ['nodejs', 'backend'],
+      timeToRead: i + 2,
+    }));
+
+    for (const post of bulkPosts) {
+      const createDto: PostCreateDto = {
+        title: post.title,
+        slug: post.slug,
+        content: post.content,
+        tags: post.tags as string[],
+        timeToRead: post.timeToRead,
+      };
+      await postService.createPost(createDto, userId);
+    }
+
+    const allPosts = await postRepository.find({ relations: ['tags'] });
+    expect(allPosts.length).toBeGreaterThanOrEqual(10);
+
+    const pageable: PageableParams = { page: 1, size: 5 };
+    const result = await postService.searchPosts(pageable, [], '');
+
+    expect(result.content.length).toBe(5);
+    expect(result.totalElements).toBe(10);
+    expect(result.totalPages).toBe(2);
+
+    const filteredByTag = await postService.searchPosts(
+      { page: 1, size: 10 },
+      ['nestjs'],
+      '',
+    );
+
+    expect(filteredByTag.content.length).toBe(5);
+    filteredByTag.content.forEach((post) => {
+      expect(post.tags).toContain('nestjs');
+    });
+
+    const filteredBySearch = await postService.searchPosts(
+      { page: 1, size: 10 },
+      [],
+      'Post 2',
+    );
+
+    expect(filteredBySearch.content.length).toBe(1);
+    expect(filteredBySearch.content[0].title).toContain('Post 2');
+
+    const paginated = await postService.searchPosts(
+      { page: 2, size: 5 },
+      [],
+      '',
+    );
+    expect(paginated.content.length).toBe(5);
+    expect(paginated.pageable.pageNumber).toBe(2);
+
+    // Проверяем, что повторяющихся постов между страницами нет
+    const firstPageIds = new Set(result.content.map((post) => post.id));
+    const secondPageIds = new Set(paginated.content.map((post) => post.id));
+    const commonIds = new Set(
+      [...firstPageIds].filter((id) => secondPageIds.has(id)),
+    );
+
+    expect(commonIds.size).toBe(0);
+  });
 });
