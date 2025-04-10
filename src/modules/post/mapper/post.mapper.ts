@@ -5,11 +5,12 @@ export function postEntityToDto(payload: PostEntity): PostDto {
   return {
     id: payload.id,
     title: payload.title,
+    description: payload.description,
     slug: payload.slug,
     tags: payload.tags?.map((tag) => tag.name),
     timeToRead: payload.timeToRead,
-    createdAt: payload.audit.createdDate,
-    updatedAt: payload.audit.updatedDate,
+    createdAt: payload.audit?.createdDate?.toLocaleString(),
+    updatedAt: payload.audit?.updatedDate?.toLocaleString(),
   };
 }
 

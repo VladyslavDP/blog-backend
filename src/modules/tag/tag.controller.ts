@@ -11,7 +11,7 @@ import {
   Query,
 } from '@nestjs/common';
 import { TagService } from '@app/modules/tag/tag.service';
-import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 import { ERoles, Page, PageableParams } from '@app/common/types';
 import { TagDto } from '@app/modules/tag/dto/tag.dto';
 import { ApiOkResponsePaginated } from '@app/common/decorators/api/paged-response.decorator';

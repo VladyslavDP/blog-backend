@@ -37,13 +37,18 @@ export class PostDto {
     example: '2023-08-20T14:20:00Z',
     description: 'The creation timestamp of the post',
   })
-  createdAt: Date;
+  createdAt: string;
 
   @ApiProperty({
     example: '2023-08-21T09:15:00Z',
     description: 'The last update timestamp of the post',
   })
-  updatedAt: Date;
+  updatedAt: string;
+
+  @ApiProperty({
+    description: 'Description of the post',
+  })
+  description: string;
 }
 
 export class PostExtendedDto extends PostDto {

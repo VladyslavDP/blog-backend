@@ -50,6 +50,7 @@ describe('PostService (e2e)', () => {
       content: 'This is a test post content',
       tags: ['nestjs', 'typescript'],
       timeToRead: 5,
+      description: 'This is description',
     };
 
     await postService.createPost(createDto, userId);
@@ -69,12 +70,14 @@ describe('PostService (e2e)', () => {
       expect.arrayContaining(createDto.tags),
     );
     expect(createdPost.audit.createdBy).toBe(userId);
+    expect(createdPost.description).toBe(createdPost.description);
 
     // Update step
     const updateDto: PostUpdateDto = {
       title: 'Updated Post Title',
       tags: ['nestjs', 'backend'],
       timeToRead: 10,
+      description: 'Updated description',
     };
 
     await postService.updatePost(createdPost.id, updateDto, userId);
@@ -91,6 +94,7 @@ describe('PostService (e2e)', () => {
     );
     expect(updatedPost.timeToRead).toBe(updateDto.timeToRead);
     expect(updatedPost.audit.updatedBy).toBe(userId);
+    expect(updatedPost.description).toBe(updateDto.description);
 
     // Get post
     const postDto = await postService.getPost(updatedPost.slug);
@@ -127,6 +131,7 @@ describe('PostService (e2e)', () => {
       content: `This is content for post ${i + 1}`,
       tags: i % 2 === 0 ? ['nestjs', 'typescript'] : ['nodejs', 'backend'],
       timeToRead: i + 2,
+      description: i % 2 === 0 ? 'description' : 'introduction',
     }));
 
     for (const post of bulkPosts) {
@@ -136,6 +141,7 @@ describe('PostService (e2e)', () => {
         content: post.content,
         tags: post.tags as string[],
         timeToRead: post.timeToRead,
+        description: post.description,
       };
       await postService.createPost(createDto, userId);
     }

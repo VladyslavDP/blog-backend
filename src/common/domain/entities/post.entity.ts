@@ -23,6 +23,9 @@ export class PostEntity extends BaseEntity {
   title: string;
 
   @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
+  description: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: false, unique: true })
   slug: string;
 
   @Column({ type: 'text', nullable: false })

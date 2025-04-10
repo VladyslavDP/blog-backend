@@ -8,6 +8,7 @@ import {
   ArrayMinSize,
   IsInt,
   Min,
+  IsNotEmpty,
 } from 'class-validator';
 
 export class PostUpdateDto {
@@ -63,4 +64,14 @@ export class PostUpdateDto {
   @IsInt()
   @Min(1)
   timeToRead?: number;
+
+  @ApiProperty({
+    example: 'The content description of the post',
+    description: 'The content description of the post',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(10)
+  @MaxLength(255)
+  description: string;
 }
