@@ -7,6 +7,8 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export * from './enums';
+
 export type Nullable<T> = T | null;
 export type UUID = string;
 
@@ -129,9 +131,3 @@ export interface BufferedFile {
 }
 
 export const adminUUID = '00000000-0000-0000-0000-000000000000';
-
-export enum ERoles {
-  USER = 'user',
-  ADMIN = 'admin',
-  MODERATOR = 'moderator',
-}

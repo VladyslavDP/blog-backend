@@ -16,6 +16,7 @@ import { CognitoAuthModule } from '@nestjs-cognito/auth';
 import { JwtManagerModule } from '@app/modules/jwt-manager/jwt-manager.module';
 import { JwtManagerService } from './modules/jwt-manager/jwt-manager.service';
 import { Cache, CacheModule } from '@nestjs/cache-manager';
+import { StorageModule } from './modules/storage/storage.module';
 
 @Module({
   imports: [
@@ -66,6 +67,7 @@ import { Cache, CacheModule } from '@nestjs/cache-manager';
       }),
       inject: [JwtManagerService, Cache],
     }),
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
